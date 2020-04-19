@@ -1,26 +1,65 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {Component} from 'react';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// Components
+import Char from './Char/Char';
+import Validation from './Validation/Validation';
+
+class App extends Component {
+
+  state = {
+    characterCount : 0,
+    characters: []
+  }
+  
+  valueLengthChangeHandler = (e) => {
+    const chars = e.target.value.split("");
+
+    this.setState({
+      characterCount: e.target.value.length,
+      characters: [...chars]
+    });
+  }
+
+  removeCharHandler = (index) => {  
+    const chars = [...this.state.characters];
+    chars.splice(index, 1);
+    this.setState({
+      characterCount: chars.length,
+      characters: [...chars]
+    })
+
+  }
+
+  render() {
+
+    let validationMsg = null;
+
+    if (this.state.characterCount < 5) {
+      validationMsg = <Validation msg="Text too short."/>;
+    } 
+    else if (this.state.characterCount >= 5) {
+        validationMsg = <Validation msg="Text is now long enough."/>;
+    };
+    
+    
+    let chars = null;
+
+    if (this.state.characterCount > 0) {
+      chars = this.state.characters.map((char, index) => {
+          return <Char char={char} removeCharHandler={() => this.removeCharHandler(index)}/>
+        });
+    };
+  
+    return (
+      <div className="App">
+        <input type="text" onChange={(event) => this.valueLengthChangeHandler(event)} value={this.state.characters.join("")}/>
+        <p>{this.state.characterCount}</p>
+        {validationMsg} 
+        {chars} 
+      </div>
+    );
+  }
 }
 
 export default App;
